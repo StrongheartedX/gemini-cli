@@ -180,9 +180,20 @@ export const AppContainer = (props: AppContainerProps) => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [embeddedShellFocused, setEmbeddedShellFocused] = useState(false);
   const [showDebugProfiler, setShowDebugProfiler] = useState(false);
-  const [customDialog, setCustomDialog] = useState<React.ReactNode | null>(
+  const [customDialog, setCustomDialogState] = useState<React.ReactNode | null>(
     null,
   );
+  const [isCustomDialogFullScreen, setIsCustomDialogFullScreen] =
+    useState(false);
+
+  const setCustomDialog = useCallback(
+    (dialog: React.ReactNode | null, fullScreen: boolean = false) => {
+      setCustomDialogState(dialog);
+      setIsCustomDialogFullScreen(fullScreen);
+    },
+    [],
+  );
+
   const [copyModeEnabled, setCopyModeEnabled] = useState(false);
   const [pendingRestorePrompt, setPendingRestorePrompt] = useState(false);
 
@@ -1525,6 +1536,7 @@ Logging in with Google... Restarting Gemini CLI to continue.
       embeddedShellFocused,
       showDebugProfiler,
       customDialog,
+      isCustomDialogFullScreen,
       copyModeEnabled,
       warningMessage,
       bannerData,
@@ -1614,6 +1626,7 @@ Logging in with Google... Restarting Gemini CLI to continue.
       embeddedShellFocused,
       showDebugProfiler,
       customDialog,
+      isCustomDialogFullScreen,
       apiKeyDefaultValue,
       authState,
       copyModeEnabled,

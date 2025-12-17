@@ -144,7 +144,7 @@ describe('extensionsCommand', () => {
       expect(mockContext.ui.addItem).toHaveBeenCalledWith(
         {
           type: MessageType.INFO,
-          text: 'No extensions installed. Run `/extensions explore` to check out the gallery.',
+          text: 'No extensions installed. Run `/extensions registry` to check out the gallery.',
         },
         expect.any(Number),
       );
@@ -238,7 +238,7 @@ describe('extensionsCommand', () => {
       expect(mockContext.ui.addItem).toHaveBeenCalledWith(
         {
           type: MessageType.INFO,
-          text: 'No extensions installed. Run `/extensions explore` to check out the gallery.',
+          text: 'No extensions installed. Run `/extensions registry` to check out the gallery.',
         },
         expect.any(Number),
       );
@@ -391,97 +391,37 @@ describe('extensionsCommand', () => {
     });
   });
 
-  describe('explore', () => {
-    const exploreAction = extensionsCommand().subCommands?.find(
-      (cmd) => cmd.name === 'explore',
-    )?.action;
-
-    if (!exploreAction) {
-      throw new Error('Explore action not found');
-    }
-
-    it("should add an info message and call 'open' in a non-sandbox environment", async () => {
-      // Ensure no special environment variables that would affect behavior
-      vi.stubEnv('NODE_ENV', '');
-      vi.stubEnv('SANDBOX', '');
-
-      await exploreAction(mockContext, '');
-
-      const extensionsUrl = 'https://geminicli.com/extensions/';
-      expect(mockContext.ui.addItem).toHaveBeenCalledWith(
-        {
-          type: MessageType.INFO,
-          text: `Opening extensions page in your browser: ${extensionsUrl}`,
-        },
-        expect.any(Number),
-      );
-
-      expect(open).toHaveBeenCalledWith(extensionsUrl);
-    });
-
-    it('should only add an info message in a sandbox environment', async () => {
-      // Simulate a sandbox environment
-      vi.stubEnv('NODE_ENV', '');
-      vi.stubEnv('SANDBOX', 'gemini-sandbox');
-      const extensionsUrl = 'https://geminicli.com/extensions/';
-
-      await exploreAction(mockContext, '');
-
-      expect(mockContext.ui.addItem).toHaveBeenCalledWith(
-        {
-          type: MessageType.INFO,
-          text: `View available extensions at ${extensionsUrl}`,
-        },
-        expect.any(Number),
-      );
-
-      // Ensure 'open' was not called in the sandbox
-      expect(open).not.toHaveBeenCalled();
-    });
-
-    it('should add an info message and not call open in NODE_ENV test environment', async () => {
-      vi.stubEnv('NODE_ENV', 'test');
-      vi.stubEnv('SANDBOX', '');
-      const extensionsUrl = 'https://geminicli.com/extensions/';
-
-      await exploreAction(mockContext, '');
-
-      expect(mockContext.ui.addItem).toHaveBeenCalledWith(
-        {
-          type: MessageType.INFO,
-          text: `Would open extensions page in your browser: ${extensionsUrl} (skipped in test environment)`,
-        },
-        expect.any(Number),
-      );
-
-      // Ensure 'open' was not called in test environment
-      expect(open).not.toHaveBeenCalled();
-    });
-
-    it('should handle errors when opening the browser', async () => {
-      vi.stubEnv('NODE_ENV', '');
-      const extensionsUrl = 'https://geminicli.com/extensions/';
-      const errorMessage = 'Failed to open browser';
-      vi.mocked(open).mockRejectedValue(new Error(errorMessage));
-
-      await exploreAction(mockContext, '');
-
-      expect(mockContext.ui.addItem).toHaveBeenCalledWith(
-        {
-          type: MessageType.ERROR,
-          text: `Failed to open browser. Check out the extensions gallery at ${extensionsUrl}`,
-        },
-        expect.any(Number),
-      );
-    });
-  });
-
   describe('when enableExtensionReloading is true', () => {
     it('should include enable and disable subcommands', () => {
       const command = extensionsCommand(true);
       const subCommandNames = command.subCommands?.map((cmd) => cmd.name);
       expect(subCommandNames).toContain('enable');
       expect(subCommandNames).toContain('disable');
+    });
+
+    it('should include registry subcommand', () => {
+      const command = extensionsCommand(true);
+      const subCommandNames = command.subCommands?.map((cmd) => cmd.name);
+      expect(subCommandNames).toContain('registry');
+    });
+
+    describe('registry', () => {
+      it('should return a custom_dialog with fullScreen set to true', async () => {
+        const registryAction = extensionsCommand(true).subCommands?.find(
+          (cmd) => cmd.name === 'registry',
+        )?.action;
+
+        if (!registryAction) {
+          throw new Error('Registry action not found');
+        }
+
+        const result = await registryAction(mockContext, '');
+        expect(result).toEqual({
+          type: 'custom_dialog',
+          component: expect.anything(),
+          fullScreen: true,
+        });
+      });
     });
   });
 
@@ -648,7 +588,7 @@ describe('extensionsCommand', () => {
       expect(mockContext.ui.addItem).toHaveBeenCalledWith(
         {
           type: MessageType.INFO,
-          text: 'No extensions installed. Run `/extensions explore` to check out the gallery.',
+          text: 'No extensions installed. Run `/extensions registry` to check out the gallery.',
         },
         expect.any(Number),
       );

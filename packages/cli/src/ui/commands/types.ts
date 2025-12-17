@@ -140,6 +140,7 @@ export interface ConfirmActionReturn {
 export interface OpenCustomDialogActionReturn {
   type: 'custom_dialog';
   component: ReactNode;
+  fullScreen?: boolean;
 }
 
 /**

@@ -286,6 +286,7 @@ export type HistoryItemWithoutId =
   | HistoryItemToolsList
   | HistoryItemMcpStatus
   | HistoryItemChatList
+  | HistoryItemHooksList
   | HistoryItemHooksList;
 
 export type HistoryItem = HistoryItemWithoutId & { id: number };

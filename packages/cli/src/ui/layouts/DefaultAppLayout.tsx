@@ -24,43 +24,89 @@ export const DefaultAppLayout: React.FC = () => {
   useFlickerDetector(rootUiRef, terminalHeight);
   // If in alternate buffer mode, need to leave room to draw the scrollbar on
   // the right side of the terminal.
-  const width = isAlternateBuffer
-    ? uiState.terminalWidth
-    : uiState.mainAreaWidth;
+  const width =
+    isAlternateBuffer || uiState.isCustomDialogFullScreen
+      ? uiState.terminalWidth
+      : uiState.mainAreaWidth;
   return (
     <Box
       flexDirection="column"
       width={width}
-      height={isAlternateBuffer ? terminalHeight - 1 : undefined}
+      height={
+        isAlternateBuffer
+          ? terminalHeight || 24
+          : uiState.isCustomDialogFullScreen
+            ? Math.max(1, (terminalHeight || 24) - 3)
+            : undefined
+      }
       flexShrink={0}
       flexGrow={0}
       overflow="hidden"
       ref={uiState.rootUiRef}
     >
-      <MainContent />
+      {uiState.isCustomDialogFullScreen && uiState.customDialog ? (
+        <Box
+          flexDirection="column"
+          width="100%"
+          height="100%"
+          overflow="hidden"
+        >
+          <Box flexGrow={1} flexShrink={1} width="100%" height="100%">
+            {uiState.customDialog}
+          </Box>
+          {uiState.confirmUpdateExtensionRequests.length > 0 && (
+            <Box
+              position="absolute"
+              width="100%"
+              height="100%"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <DialogManager
+                terminalWidth={uiState.mainAreaWidth}
+                addItem={uiState.historyManager.addItem}
+              />
+            </Box>
+          )}
+        </Box>
+      ) : (
+        <>
+          <MainContent />
 
-      <Box
-        flexDirection="column"
-        ref={uiState.mainControlsRef}
-        flexShrink={0}
-        flexGrow={0}
-      >
-        <Notifications />
-        <CopyModeWarning />
+          <Box
+            flexDirection="column"
+            ref={uiState.mainControlsRef}
+            flexShrink={0}
+            flexGrow={0}
+          >
+            <Notifications />
+            <CopyModeWarning />
 
-        {uiState.customDialog ? (
-          uiState.customDialog
-        ) : uiState.dialogsVisible ? (
-          <DialogManager
-            terminalWidth={uiState.mainAreaWidth}
-            addItem={uiState.historyManager.addItem}
-          />
-        ) : (
-          <Composer />
-        )}
+            {uiState.customDialog ? (
+              <Box flexDirection="column">
+                <Box flexGrow={1} flexShrink={1}>
+                  {uiState.customDialog}
+                </Box>
+                {uiState.confirmUpdateExtensionRequests.length > 0 && (
+                  <DialogManager
+                    terminalWidth={uiState.mainAreaWidth}
+                    addItem={uiState.historyManager.addItem}
+                  />
+                )}
+              </Box>
+            ) : uiState.dialogsVisible ? (
+              <DialogManager
+                terminalWidth={uiState.mainAreaWidth}
+                addItem={uiState.historyManager.addItem}
+              />
+            ) : (
+              <Composer />
+            )}
 
-        <ExitWarning />
-      </Box>
+            <ExitWarning />
+          </Box>
+        </>
+      )}
     </Box>
   );
 };

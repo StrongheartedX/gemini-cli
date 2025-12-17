@@ -13,13 +13,13 @@ import {
   type HistoryItemExtensionsList,
   type HistoryItemInfo,
 } from '../types.js';
+import { ExtensionRegistry } from '../components/ExtensionRegistry.js';
+
 import {
   type CommandContext,
   type SlashCommand,
   CommandKind,
 } from './types.js';
-import open from 'open';
-import process from 'node:process';
 import { ExtensionManager } from '../../config/extension-manager.js';
 import { SettingScope } from '../../config/settings.js';
 import { theme } from '../semantic-colors.js';
@@ -32,7 +32,7 @@ function showMessageIfNoExtensions(
     context.ui.addItem(
       {
         type: MessageType.INFO,
-        text: 'No extensions installed. Run `/extensions explore` to check out the gallery.',
+        text: 'No extensions installed. Run `/extensions registry` to check out the gallery.',
       },
       Date.now(),
     );
@@ -269,51 +269,6 @@ async function restartAction(
   }
 }
 
-async function exploreAction(context: CommandContext) {
-  const extensionsUrl = 'https://geminicli.com/extensions/';
-
-  // Only check for NODE_ENV for explicit test mode, not for unit test framework
-  if (process.env['NODE_ENV'] === 'test') {
-    context.ui.addItem(
-      {
-        type: MessageType.INFO,
-        text: `Would open extensions page in your browser: ${extensionsUrl} (skipped in test environment)`,
-      },
-      Date.now(),
-    );
-  } else if (
-    process.env['SANDBOX'] &&
-    process.env['SANDBOX'] !== 'sandbox-exec'
-  ) {
-    context.ui.addItem(
-      {
-        type: MessageType.INFO,
-        text: `View available extensions at ${extensionsUrl}`,
-      },
-      Date.now(),
-    );
-  } else {
-    context.ui.addItem(
-      {
-        type: MessageType.INFO,
-        text: `Opening extensions page in your browser: ${extensionsUrl}`,
-      },
-      Date.now(),
-    );
-    try {
-      await open(extensionsUrl);
-    } catch (_error) {
-      context.ui.addItem(
-        {
-          type: MessageType.ERROR,
-          text: `Failed to open browser. Check out the extensions gallery at ${extensionsUrl}`,
-        },
-        Date.now(),
-      );
-    }
-  }
-}
-
 function getEnableDisableContext(
   context: CommandContext,
   argumentsString: string,
@@ -505,14 +460,6 @@ const enableCommand: SlashCommand = {
   completion: completeExtensionsAndScopes,
 };
 
-const exploreExtensionsCommand: SlashCommand = {
-  name: 'explore',
-  description: 'Open extensions page in your browser',
-  kind: CommandKind.BUILT_IN,
-  autoExecute: true,
-  action: exploreAction,
-};
-
 const restartCommand: SlashCommand = {
   name: 'restart',
   description: 'Restart all extensions',
@@ -522,11 +469,29 @@ const restartCommand: SlashCommand = {
   completion: completeExtensions,
 };
 
+const registryCommand: SlashCommand = {
+  name: 'registry',
+  description: 'Browse and install extensions',
+  kind: CommandKind.BUILT_IN,
+  autoExecute: true,
+  action: async (context) => ({
+      type: 'custom_dialog',
+      component: (
+        <ExtensionRegistry
+          onExit={() => {
+            context.ui.removeComponent();
+          }}
+        />
+      ),
+      fullScreen: true,
+    }),
+};
+
 export function extensionsCommand(
   enableExtensionReloading?: boolean,
 ): SlashCommand {
   const conditionalCommands = enableExtensionReloading
-    ? [disableCommand, enableCommand]
+    ? [registryCommand, disableCommand, enableCommand]
     : [];
   return {
     name: 'extensions',
@@ -534,11 +499,10 @@ export function extensionsCommand(
     kind: CommandKind.BUILT_IN,
     autoExecute: false,
     subCommands: [
+      ...conditionalCommands,
       listExtensionsCommand,
       updateExtensionsCommand,
-      exploreExtensionsCommand,
       restartCommand,
-      ...conditionalCommands,
     ],
     action: (context, args) =>
       // Default to list if no subcommand is provided

@@ -149,38 +149,7 @@ function VirtualizedList<T>(
     });
   }, [data, estimatedItemHeight]);
 
-  // This layout effect needs to run on every render to correctly measure the
-  // container and ensure we recompute the layout if it has changed.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useLayoutEffect(() => {
-    if (containerRef.current) {
-      const height = Math.round(measureElement(containerRef.current).height);
-      if (containerHeight !== height) {
-        setContainerHeight(height);
-      }
-    }
-
-    let newHeights: number[] | null = null;
-    for (let i = startIndex; i <= endIndex; i++) {
-      const itemRef = itemRefs.current[i];
-      if (itemRef) {
-        const height = Math.round(measureElement(itemRef).height);
-        if (height !== heights[i]) {
-          if (!newHeights) {
-            newHeights = [...heights];
-          }
-          newHeights[i] = height;
-        }
-      }
-    }
-    if (newHeights) {
-      setHeights(newHeights);
-    }
-  });
-
-  const scrollableContainerHeight = containerRef.current
-    ? Math.round(measureElement(containerRef.current).height)
-    : containerHeight;
+  const scrollableContainerHeight = containerHeight || 1;
 
   const getAnchorForScrollTop = useCallback(
     (
@@ -330,17 +299,79 @@ function VirtualizedList<T>(
     scrollableContainerHeight,
   ]);
 
-  const startIndex = Math.max(
-    0,
-    findLastIndex(offsets, (offset) => offset <= scrollTop) - 1,
-  );
-  const endIndexOffset = offsets.findIndex(
-    (offset) => offset > scrollTop + scrollableContainerHeight,
-  );
-  const endIndex =
-    endIndexOffset === -1
-      ? data.length - 1
-      : Math.min(data.length - 1, endIndexOffset);
+  const { startIndex, endIndex } = useMemo(() => {
+    const start = Math.max(
+      0,
+      findLastIndex(offsets, (offset) => offset <= scrollTop) - 1,
+    );
+    const endOffset = offsets.findIndex(
+      (offset) => offset > scrollTop + scrollableContainerHeight,
+    );
+    const end =
+      endOffset === -1 ? data.length - 1 : Math.min(data.length - 1, endOffset);
+    return { startIndex: start, endIndex: end };
+  }, [offsets, scrollTop, scrollableContainerHeight, data.length]);
+
+  const measurementCycleRef = useRef(0);
+  const lastMeasurementKeyRef = useRef('');
+
+  const lastMeasurementTimeRef = useRef(0);
+
+  // This layout effect needs to run on every render to correctly measure the
+  // container and ensure we recompute the layout if it has changed.
+   
+  useLayoutEffect(() => {
+    let changed = false;
+    if (containerRef.current) {
+      const height = Math.round(measureElement(containerRef.current).height);
+      if (containerHeight !== height && height > 0) {
+        setContainerHeight(height);
+        changed = true;
+      }
+    }
+
+    if (changed) return; // Wait for next layout if container changed
+
+    let newHeights: number[] | null = null;
+    for (let i = startIndex; i <= endIndex; i++) {
+      const itemRef = itemRefs.current[i];
+      if (itemRef) {
+        const height = Math.round(measureElement(itemRef).height);
+        // Use a small epsilon to avoid jitter if needed, but here we use exact match
+        if (height > 0 && height !== heights[i]) {
+          if (!newHeights) {
+            newHeights = [...heights];
+          }
+          newHeights[i] = height;
+        }
+      }
+    }
+
+    if (newHeights) {
+      const now = Date.now();
+      const measurementKey = `${startIndex}-${endIndex}-${containerHeight}-${data.length}`;
+
+      if (measurementKey === lastMeasurementKeyRef.current) {
+        // If we are measuring the same range repeatedly, check the frequency
+        if (now - lastMeasurementTimeRef.current < 50) {
+          measurementCycleRef.current++;
+        } else {
+          measurementCycleRef.current = 0;
+        }
+      } else {
+        measurementCycleRef.current = 0;
+        lastMeasurementKeyRef.current = measurementKey;
+      }
+      lastMeasurementTimeRef.current = now;
+
+      // Guard against infinite measurement loops
+      if (measurementCycleRef.current > 10) {
+        return;
+      }
+
+      setHeights(newHeights);
+    }
+  }, [startIndex, endIndex, heights, containerHeight, data.length]);
 
   const topSpacerHeight = offsets[startIndex] ?? 0;
   const bottomSpacerHeight =

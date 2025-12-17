@@ -136,6 +136,7 @@ export interface UIState {
   };
   bannerVisible: boolean;
   customDialog: React.ReactNode | null;
+  isCustomDialogFullScreen: boolean;
 }
 
 export const UIStateContext = createContext<UIState | null>(null);

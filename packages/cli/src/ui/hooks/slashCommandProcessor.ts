@@ -90,7 +90,10 @@ export const useSlashCommandProcessor = (
   extensionsUpdateState: Map<string, ExtensionUpdateStatus>,
   isConfigInitialized: boolean,
   setBannerVisible: (visible: boolean) => void,
-  setCustomDialog: (dialog: React.ReactNode | null) => void,
+  setCustomDialog: (
+    dialog: React.ReactNode | null,
+    fullScreen?: boolean,
+  ) => void,
 ) => {
   const session = useSessionStats();
   const [commands, setCommands] = useState<readonly SlashCommand[] | undefined>(
@@ -552,7 +555,7 @@ export const useSlashCommandProcessor = (
                   );
                 }
                 case 'custom_dialog': {
-                  setCustomDialog(result.component);
+                  setCustomDialog(result.component, result.fullScreen);
                   return { type: 'handled' };
                 }
                 default: {
