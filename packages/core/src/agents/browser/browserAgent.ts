@@ -43,7 +43,7 @@ export class BrowserAgent {
 
     try {
       // Check if browser is available (and Playwright is installed)
-      await browserManager.getPage();
+      await browserManager.getPage(log);
     } catch (e) {
       if (
         e instanceof Error &&

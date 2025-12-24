@@ -16,7 +16,7 @@ export class BrowserManager {
   private context: BrowserContext | null = null;
   private page: Page | null = null;
 
-  async getPage(): Promise<Page> {
+  async getPage(log?: (message: string) => void): Promise<Page> {
     if (!this.browser || !this.browser.isConnected()) {
       let chromium;
       try {
@@ -32,7 +32,7 @@ export class BrowserManager {
           chromium = playwright.chromium || playwright.default?.chromium;
         } catch (_e2) {
           // Fallback: Managed installation in ~/.gemini/dependencies
-          chromium = await this.ensureManagedPlaywrightAvailable();
+          chromium = await this.ensureManagedPlaywrightAvailable(log);
         }
       }
 
@@ -99,8 +99,9 @@ export class BrowserManager {
     return this.page;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async ensureManagedPlaywrightAvailable(): Promise<any> {
+  private async ensureManagedPlaywrightAvailable(
+    log?: (message: string) => void,
+  ): Promise<unknown> {
     const depDir = Storage.getGlobalDependenciesDir();
     const depPkgJson = path.join(depDir, 'package.json');
 
@@ -119,7 +120,7 @@ export class BrowserManager {
     } catch (_e3) {
       debugLogger.log('Playwright not found globally. Installing...');
       try {
-        await this.installPlaywright(depDir);
+        await this.installPlaywright(depDir, log);
 
         const playwrightPath = requireGlobal.resolve('playwright');
         const playwright = await import(playwrightPath);
@@ -136,9 +137,36 @@ export class BrowserManager {
     }
   }
 
-  private async installPlaywright(cwd: string): Promise<void> {
+  private async installPlaywright(
+    cwd: string,
+    log?: (message: string) => void,
+  ): Promise<void> {
     // We use spawn to inherit stdio so user sees progress
     const { spawn } = await import('node:child_process');
+
+    // Pre-flight check for npm
+    await new Promise<void>((resolve, reject) => {
+      const check = spawn('npm', ['--version'], {
+        stdio: 'ignore',
+        shell: true,
+      });
+      check.on('close', (code) => {
+        if (code === 0) resolve();
+        else
+          reject(
+            new Error(
+              'npm is required to install the browser agent components, but it was not found in your PATH.',
+            ),
+          );
+      });
+      check.on('error', () =>
+        reject(
+          new Error(
+            'npm is required to install the browser agent components, but it was not found in your PATH.',
+          ),
+        ),
+      );
+    });
 
     const installPackage = () =>
       new Promise<void>((resolve, reject) => {
@@ -180,15 +208,24 @@ export class BrowserManager {
         npx.on('error', reject);
       });
 
-    console.log(
+    let message =
       'Playwright is required for the Browser Agent. Installing to ' +
-        cwd +
-        '...',
-    );
+      cwd +
+      '...\n';
+    if (log) log(message);
+    else debugLogger.log(message);
+
     await installPackage();
-    console.log('Installing Chromium browser...');
+
+    message += 'Installing Chromium browser...\n';
+    if (log) log(message);
+    else debugLogger.log('Installing Chromium browser...');
+
     await installBrowsers();
-    console.log('Playwright installation complete.');
+
+    message += 'Playwright installation complete.\n';
+    if (log) log(message);
+    else debugLogger.log('Playwright installation complete.');
   }
 
   async close() {
