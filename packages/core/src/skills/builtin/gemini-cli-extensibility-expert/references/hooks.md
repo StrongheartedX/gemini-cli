@@ -105,13 +105,17 @@ To verify that your hooks are executing correctly headlessly:
       `gemini --debug --allowed-tools <minimal_tools> "your targeted prompt"`
     - **Note**: `read_file` does not need to be in `--allowed-tools` for
       read-only headless operations.
-3.  **Security WARNING**: **You must explicitly WARN the user** that
-    `--allowed-tools` bypasses confirmation prompts, granting the agent elevated
-    privileges for that command.
-4.  **Offer Alternatives**: Always offer **manual verification** (running the
-    trigger prompt in an interactive session) as the safest option.
-5.  **Confirmation**: If you run the headless command yourself, **wait for
-    explicit user approval** after providing the warning.
+3.  **Verification Choice**: **Ask the user first** if they want to verify
+    **manually** (interactive session) or have **you** (the agent) verify it on
+    their behalf. Mention that agent-led verification involves the agent
+    invoking itself headlessly and will require extra confirmations.
+4.  **Security WARNING**: If the user chooses agent-led verification, **you must
+    explicitly WARN them** that you will be invoking Gemini CLI on their behalf
+    and will need to allow-list the tools required for verification. This means
+    those tools will run without further confirmation for that specific command.
+5.  **Confirmation & Invocation**: Once the user provides verbal confirmation,
+    inform them you are using the `--allowed-tools` flag and then execute the
+    headless command (e.g., `gemini --debug --allowed-tools <tools> "..."`).
 6.  **Inspect Logs**: Check debug output for your hook's `stderr` and
     `HookRunner` logs.
 7.  **Clean up**: Remove debug instrumentation before finalizing.

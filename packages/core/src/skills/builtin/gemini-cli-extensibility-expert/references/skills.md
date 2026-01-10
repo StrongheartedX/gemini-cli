@@ -69,13 +69,17 @@ To validate that a skill is correctly discovered and can be activated:
 
 1.  **Targeted Activation**: Headlessly trigger the skill using:
     `gemini --debug --allowed-tools activate_skill,<minimal_tools> "your targeted prompt"`
-2.  **Security WARNING**: **You must explicitly WARN the user** that
-    `--allowed-tools` bypasses confirmation prompts, granting the agent elevated
-    privileges for that command.
-3.  **Offer Alternatives**: Always offer **manual verification** (activating the
-    skill in an interactive session) as the safest option.
-4.  **Confirmation**: If you run the headless command yourself, **wait for
-    explicit user approval** after providing the warning.
+2.  **Verification Choice**: **Ask the user first** if they want to verify
+    **manually** (interactive session) or have **you** (the agent) verify it on
+    their behalf. Mention that agent-led verification involves the agent
+    invoking itself headlessly and will require extra confirmations.
+3.  **Security WARNING**: If the user chooses agent-led verification, **you must
+    explicitly WARN them** that you will be invoking Gemini CLI on their behalf
+    and will need to allow-list the tools required for verification. This means
+    those tools will run without further confirmation for that specific command.
+4.  **Confirmation & Invocation**: Once the user provides verbal confirmation,
+    inform them you are using the `--allowed-tools` flag and then execute the
+    targeted headless command.
 5.  **Troubleshooting**: Inspect the `--debug` logs to verify skill discovery
     and activation.
 6.  **UI List**: **The user** can use `/skills list` in an interactive session.
