@@ -90,7 +90,11 @@ To validate a newly created or modified slash command headlessly:
 **Note**:
 
 - If your command uses shell injections (`!{...}`), you must include
-  `run_shell_command` in the `--allowed-tools` list.
+  `run_shell_command` in the `--allowed-tools` list. To reduce the blast radius,
+  you **MUST** scope it down using prefix matching, e.g.,
+  `run_shell_command(git diff)`.
+- `read_file` is allowed by default for read-only headless operations (e.g.,
+  when using `@{...}`).
 - Headless execution (using a string prompt) is read-only by default.
 
 ## Documentation

@@ -116,6 +116,8 @@ To verify that your hooks are executing correctly headlessly:
 5.  **Confirmation & Invocation**: Once the user provides verbal confirmation,
     inform them you are using the `--allowed-tools` flag and then execute the
     headless command (e.g., `gemini --debug --allowed-tools <tools> "..."`).
+    **Tip**: For `run_shell_command`, you can use prefix matching for better
+    security, e.g., `--allowed-tools "run_shell_command(ls -a)"`.
 6.  **Inspect Logs**: Check debug output for your hook's `stderr` and
     `HookRunner` logs.
 7.  **Clean up**: Remove debug instrumentation before finalizing.
