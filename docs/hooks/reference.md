@@ -51,6 +51,19 @@ Most hooks support these fields in their `stdout` JSON:
 
 ## 🛠️ Tool Hooks
 
+### Matchers and Tool Names
+
+For `BeforeTool` and `AfterTool` events, the `matcher` field in your settings is
+compared against the name of the tool being executed.
+
+- **Built-in Tools**: You can match any built-in tool (e.g., `read_file`,
+  `run_shell_command`). See the [Tools Reference](/docs/tools) for a full list
+  of available tool names.
+- **MCP Tools**: Tools from MCP servers follow the naming pattern
+  `mcp__<server_name>__<tool_name>`.
+- **Regex Support**: Matchers support regular expressions (e.g.,
+  `matcher: "read_.*"` matches all file reading tools).
+
 ### `BeforeTool`
 
 Fires before a tool is invoked. Used for argument validation, security checks,

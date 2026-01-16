@@ -88,9 +88,14 @@ You can filter which specific tools or triggers fire your hook using the
 
 ## Configuration
 
-Hook definitions are configured in `settings.json`. Configuration can be
-specified at multiple levels (Project, User, System, Extensions) with defined
-precedence rules.
+Hook definitions are configured in `settings.json`. Gemini CLI merges
+configurations from multiple layers in the following order of precedence
+(highest to lowest):
+
+1.  **Project Settings**: `.gemini/settings.json` in the current directory.
+2.  **User Settings**: `~/.gemini/settings.json`.
+3.  **System Settings**: `/etc/gemini-cli/settings.json`.
+4.  **Extensions**: Hooks defined by installed extensions.
 
 ### Configuration schema
 
@@ -135,8 +140,7 @@ Gemini CLI **fingerprints** project hooks. If a hook's name or command changes
 (e.g., via `git pull`), it is treated as a **new, untrusted hook** and you will
 be warned before it executes.
 
-See
-[Security Considerations](https://www.google.com/search?q=best-practices.md%23using-hooks-securely)
+See [Security Considerations](/docs/hooks/best-practices#using-hooks-securely)
 for a detailed threat model.
 
 ## Managing hooks

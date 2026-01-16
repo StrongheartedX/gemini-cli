@@ -183,6 +183,33 @@ main().catch((err) => {
 });
 ```
 
+**`.gemini/settings.json`:**
+
+```json
+{
+  "hooks": {
+    "BeforeToolSelection": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "name": "intent-filter",
+            "command": "node .gemini/hooks/filter-tools.js"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+> **TIP**
+>
+> **Union Aggregation Strategy**: `BeforeToolSelection` is unique in that it
+> combines the results of all matching hooks. If you have multiple filtering
+> hooks, the agent will receive the **union** of all whitelisted tools. Only
+> using `mode: "NONE"` will override other hooks to disable all tools.
+
 ## Complete example: Smart Development Workflow Assistant
 
 This comprehensive example demonstrates all hook events working together. We
