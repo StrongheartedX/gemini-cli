@@ -115,6 +115,8 @@ class ThemeManager {
       return;
     }
 
+    debugLogger.log('Registering extension themes:', customThemes);
+
     for (const customThemeConfig of customThemes) {
       const validation = validateCustomTheme(customThemeConfig);
       if (validation.isValid) {
@@ -133,6 +135,7 @@ class ThemeManager {
         try {
           const theme = createCustomTheme(themeWithDefaults);
           this.customThemes.set(customThemeConfig.name, theme);
+          debugLogger.log(`Registered theme: ${customThemeConfig.name}`);
         } catch (error) {
           debugLogger.warn(
             `Failed to load custom theme "${customThemeConfig.name}":`,
@@ -232,6 +235,7 @@ class ThemeManager {
     );
 
     const allThemes = [...builtInThemes, ...customThemes];
+    debugLogger.log('Available themes:', allThemes);
 
     const sortedThemes = allThemes.sort((a, b) => {
       const typeOrder = (type: ThemeType): number => {
