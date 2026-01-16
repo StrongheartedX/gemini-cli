@@ -107,6 +107,47 @@ class ThemeManager {
   }
 
   /**
+   * Loads custom themes from extensions.
+   * @param customThemesSettings Custom themes from extensions.
+   */
+  registerExtensionThemes(customThemes?: CustomTheme[]): void {
+    if (!customThemes) {
+      return;
+    }
+
+    for (const customThemeConfig of customThemes) {
+      const validation = validateCustomTheme(customThemeConfig);
+      if (validation.isValid) {
+        if (validation.warning) {
+          debugLogger.warn(
+            `Theme "${customThemeConfig.name}": ${validation.warning}`,
+          );
+        }
+        const themeWithDefaults: CustomTheme = {
+          ...DEFAULT_THEME.colors,
+          ...customThemeConfig,
+          name: customThemeConfig.name,
+          type: 'custom',
+        };
+
+        try {
+          const theme = createCustomTheme(themeWithDefaults);
+          this.customThemes.set(customThemeConfig.name, theme);
+        } catch (error) {
+          debugLogger.warn(
+            `Failed to load custom theme "${customThemeConfig.name}":`,
+            error,
+          );
+        }
+      } else {
+        debugLogger.warn(
+          `Invalid custom theme "${customThemeConfig.name}": ${validation.error}`,
+        );
+      }
+    }
+  }
+
+  /**
    * Sets the active theme.
    * @param themeName The name of the theme to set as active.
    * @returns True if the theme was successfully set, false otherwise.

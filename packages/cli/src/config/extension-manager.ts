@@ -68,6 +68,7 @@ import {
   ExtensionSettingScope,
 } from './extensions/extensionSettings.js';
 import type { EventEmitter } from 'node:stream';
+import { themeManager } from '../ui/themes/theme-manager.js';
 
 interface ExtensionManagerParams {
   enabledExtensionOverrides?: string[];
@@ -622,6 +623,10 @@ Would you like to attempt to install via "git clone" instead?`,
         path.join(effectiveExtensionPath, 'skills'),
       );
 
+      if (config.themes) {
+        themeManager.registerExtensionThemes(config.themes);
+      }
+
       const agentLoadResult = await loadAgentsFromDirectory(
         path.join(effectiveExtensionPath, 'agents'),
       );
@@ -651,6 +656,7 @@ Would you like to attempt to install via "git clone" instead?`,
         resolvedSettings,
         skills,
         agents: agentLoadResult.agents,
+        themes: config.themes,
       };
       this.loadedExtensions = [...this.loadedExtensions, extension];
 
