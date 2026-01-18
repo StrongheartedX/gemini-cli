@@ -22,7 +22,7 @@ describe('CodebaseInvestigatorAgent', () => {
     );
     expect(CodebaseInvestigatorAgent.description).toBeDefined();
     expect(
-      CodebaseInvestigatorAgent.inputConfig.inputs['objective'].required,
+      CodebaseInvestigatorAgent.inputConfig.inputs['question'].required,
     ).toBe(true);
     expect(CodebaseInvestigatorAgent.outputConfig?.outputName).toBe('report');
     expect(CodebaseInvestigatorAgent.modelConfig?.model).toBe(

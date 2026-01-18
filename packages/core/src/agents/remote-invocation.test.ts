@@ -64,7 +64,7 @@ describe('RemoteAgentInvocation', () => {
       expect(() => {
         new RemoteAgentInvocation(
           mockDefinition,
-          { query: 'valid' },
+          { question: 'valid' },
           mockMessageBus,
         );
       }).not.toThrow();
@@ -73,17 +73,17 @@ describe('RemoteAgentInvocation', () => {
     it('throws if query is missing', () => {
       expect(() => {
         new RemoteAgentInvocation(mockDefinition, {}, mockMessageBus);
-      }).toThrow("requires a string 'query' input");
+      }).toThrow("requires a string 'question' input");
     });
 
     it('throws if query is not a string', () => {
       expect(() => {
         new RemoteAgentInvocation(
           mockDefinition,
-          { query: 123 },
+          { question: 123 },
           mockMessageBus,
         );
-      }).toThrow("requires a string 'query' input");
+      }).toThrow("requires a string 'question' input");
     });
   });
 
@@ -100,7 +100,7 @@ describe('RemoteAgentInvocation', () => {
       const invocation = new RemoteAgentInvocation(
         mockDefinition,
         {
-          query: 'hi',
+          question: 'hi',
         },
         mockMessageBus,
       );
@@ -128,7 +128,7 @@ describe('RemoteAgentInvocation', () => {
       const invocation = new RemoteAgentInvocation(
         mockDefinition,
         {
-          query: 'hi',
+          question: 'hi',
         },
         mockMessageBus,
       );
@@ -153,7 +153,7 @@ describe('RemoteAgentInvocation', () => {
       const invocation1 = new RemoteAgentInvocation(
         mockDefinition,
         {
-          query: 'first',
+          question: 'first',
         },
         mockMessageBus,
       );
@@ -180,7 +180,7 @@ describe('RemoteAgentInvocation', () => {
       const invocation2 = new RemoteAgentInvocation(
         mockDefinition,
         {
-          query: 'second',
+          question: 'second',
         },
         mockMessageBus,
       );
@@ -206,7 +206,7 @@ describe('RemoteAgentInvocation', () => {
       const invocation3 = new RemoteAgentInvocation(
         mockDefinition,
         {
-          query: 'third',
+          question: 'third',
         },
         mockMessageBus,
       );
@@ -223,7 +223,7 @@ describe('RemoteAgentInvocation', () => {
       const invocation4 = new RemoteAgentInvocation(
         mockDefinition,
         {
-          query: 'fourth',
+          question: 'fourth',
         },
         mockMessageBus,
       );
@@ -245,7 +245,7 @@ describe('RemoteAgentInvocation', () => {
       const invocation = new RemoteAgentInvocation(
         mockDefinition,
         {
-          query: 'hi',
+          question: 'hi',
         },
         mockMessageBus,
       );
@@ -272,7 +272,7 @@ describe('RemoteAgentInvocation', () => {
       const invocation = new RemoteAgentInvocation(
         mockDefinition,
         {
-          query: 'hi',
+          question: 'hi',
         },
         mockMessageBus,
       );
@@ -288,7 +288,7 @@ describe('RemoteAgentInvocation', () => {
       const invocation = new RemoteAgentInvocation(
         mockDefinition,
         {
-          query: 'hi',
+          question: 'hi',
         },
         mockMessageBus,
       );

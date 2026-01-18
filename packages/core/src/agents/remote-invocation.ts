@@ -89,15 +89,15 @@ export class RemoteAgentInvocation extends BaseToolInvocation<
     _toolName?: string,
     _toolDisplayName?: string,
   ) {
-    const query = params['query'];
-    if (typeof query !== 'string') {
+    const question = params['question'];
+    if (typeof question !== 'string') {
       throw new Error(
-        `Remote agent '${definition.name}' requires a string 'query' input.`,
+        `Remote agent '${definition.name}' requires a string 'question' input.`,
       );
     }
     // Safe to pass strict object to super
     super(
-      { query },
+      { question },
       messageBus,
       _toolName ?? definition.name,
       _toolDisplayName ?? definition.displayName,
@@ -115,7 +115,7 @@ export class RemoteAgentInvocation extends BaseToolInvocation<
     return {
       type: 'info',
       title: `Call Remote Agent: ${this.definition.displayName ?? this.definition.name}`,
-      prompt: `Calling remote agent: "${this.params.query}"`,
+      prompt: `Calling remote agent: "${this.params.question}"`,
       onConfirm: async (outcome: ToolConfirmationOutcome) => {
         await this.publishPolicyUpdate(outcome);
       },
@@ -143,7 +143,7 @@ export class RemoteAgentInvocation extends BaseToolInvocation<
         );
       }
 
-      const message = this.params.query;
+      const message = this.params.question;
 
       const response = await this.clientManager.sendMessage(
         this.definition.name,

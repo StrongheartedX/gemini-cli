@@ -40,9 +40,9 @@ export interface OutputObject {
 export type AgentInputs = Record<string, unknown>;
 
 /**
- * Simplified input structure for Remote Agents, which consumes a single string query.
+ * Simplified input structure for Remote Agents, which consumes a single string question.
  */
-export type RemoteAgentInputs = { query: string };
+export type RemoteAgentInputs = { question: string };
 
 /**
  * Structured events emitted during subagent execution for user observability.

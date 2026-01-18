@@ -10,7 +10,7 @@ import type { InputConfig } from './types.js';
 
 const PRIMITIVE_TYPES_CONFIG: InputConfig = {
   inputs: {
-    goal: {
+    question: {
       type: 'string',
       description: 'The primary objective',
       required: true,
@@ -88,7 +88,7 @@ describe('convertInputConfigToJsonSchema', () => {
       expect(result).toEqual({
         type: 'object',
         properties: {
-          goal: { type: 'string', description: 'The primary objective' },
+          question: { type: 'string', description: 'The primary objective' },
           max_retries: {
             type: 'integer',
             description: 'Maximum number of retries',
@@ -96,7 +96,7 @@ describe('convertInputConfigToJsonSchema', () => {
           temperature: { type: 'number', description: 'The model temperature' },
           verbose: { type: 'boolean', description: 'Enable verbose logging' },
         },
-        required: ['goal', 'temperature'],
+        required: ['question', 'temperature'],
       });
     });
 

@@ -453,7 +453,7 @@ export class AgentRegistry {
       .map(([name, def]) => `- **${name}**: ${def.description}`)
       .join('\n');
 
-    return `Delegates a task to a specialized sub-agent.\n\nAvailable agents:\n${agentDescriptions}`;
+    return `ALWAYS use this tool to delegate to a specialized sub-agent if one exists that has expertise relevant to the user's request. Sub-agents are experts in their domains and should be preferred over the generalist agent for domain-specific tasks.\n\nAvailable agents:\n${agentDescriptions}`;
   }
 
   /**
@@ -469,8 +469,7 @@ export class AgentRegistry {
     context += `Sub-agents are specialized expert agents that you can use to assist you in
       the completion of all or part of a task.
 
-      ALWAYS use \`${DELEGATE_TO_AGENT_TOOL_NAME}\` to delegate to a subagent if one
-      exists that has expertise relevant to your task.
+      **CRITICAL:** Before performing any task, you **MUST** check the list of available sub-agents below. If a specialized sub-agent exists that has expertise relevant to your task, you **MUST** use \`${DELEGATE_TO_AGENT_TOOL_NAME}\` to delegate the task to them. You are **PROHIBITED** from attempting to perform the task yourself if an expert is available. This is a hard requirement for system efficiency and accuracy.
 
       For example:
       - Prompt: 'Fix test', Description: 'An agent with expertise in fixing tests.' -> should use the sub-agent.

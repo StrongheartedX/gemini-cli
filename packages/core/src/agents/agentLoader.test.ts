@@ -241,7 +241,7 @@ Body`);
         description: 'A test agent',
         promptConfig: {
           systemPrompt: 'You are a test agent.',
-          query: '${query}',
+          query: '${question}',
         },
         modelConfig: {
           model: 'inherit',
@@ -254,7 +254,7 @@ Body`);
         },
         inputConfig: {
           inputs: {
-            query: {
+            question: {
               type: 'string',
               required: false,
             },
@@ -310,7 +310,7 @@ Body`);
         agentCardUrl: 'https://example.com/card',
         inputConfig: {
           inputs: {
-            query: {
+            question: {
               type: 'string',
               description: 'The task for the agent.',
               required: false,

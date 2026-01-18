@@ -74,7 +74,7 @@ describe('DelegateToAgentTool', () => {
     agentCardUrl: 'https://example.com/agent.json',
     inputConfig: {
       inputs: {
-        query: { type: 'string', description: 'Query', required: true },
+        question: { type: 'string', description: 'Question', required: true },
       },
     },
   };
@@ -103,7 +103,7 @@ describe('DelegateToAgentTool', () => {
   it('should use dynamic description from registry', () => {
     // registry has mockAgentDef registered in beforeEach
     expect(tool.description).toContain(
-      'Delegates a task to a specialized sub-agent',
+      'ALWAYS use this tool to delegate to a specialized sub-agent',
     );
     expect(tool.description).toContain(
       `- **${mockAgentDef.name}**: ${mockAgentDef.description}`,
@@ -220,7 +220,7 @@ describe('DelegateToAgentTool', () => {
   it('should delegate to remote agent correctly', async () => {
     const invocation = tool.build({
       agent_name: 'remote_agent',
-      query: 'hello remote',
+      question: 'hello remote',
     });
 
     const result = await invocation.execute(new AbortController().signal);
@@ -229,7 +229,7 @@ describe('DelegateToAgentTool', () => {
     });
     expect(RemoteAgentInvocation).toHaveBeenCalledWith(
       mockRemoteAgentDef,
-      { query: 'hello remote' },
+      { question: 'hello remote' },
       messageBus,
       'remote_agent',
       'remote_agent',
@@ -263,7 +263,7 @@ describe('DelegateToAgentTool', () => {
     it('should forward to remote agent confirmation logic', async () => {
       const invocation = tool.build({
         agent_name: 'remote_agent',
-        query: 'hello remote',
+        question: 'hello remote',
       });
 
       const result = await invocation.shouldConfirmExecute(

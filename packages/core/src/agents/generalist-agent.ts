@@ -29,7 +29,7 @@ export const GeneralistAgent = (
   experimental: true,
   inputConfig: {
     inputs: {
-      request: {
+      question: {
         description: 'The task or question for the generalist agent.',
         type: 'string',
         required: true,
@@ -61,7 +61,7 @@ export const GeneralistAgent = (
         /*useMemory=*/ undefined,
         /*interactiveOverride=*/ false,
       ),
-      query: '${request}',
+      query: '${question}',
     };
   },
   runConfig: {

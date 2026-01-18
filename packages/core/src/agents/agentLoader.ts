@@ -248,7 +248,7 @@ export function markdownToAgentDefinition(
 ): AgentDefinition {
   const inputConfig = {
     inputs: {
-      query: {
+      question: {
         type: 'string' as const,
         description: 'The task for the agent.',
         required: false,
@@ -277,7 +277,7 @@ export function markdownToAgentDefinition(
     displayName: markdown.display_name,
     promptConfig: {
       systemPrompt: markdown.system_prompt,
-      query: '${query}',
+      query: '${question}',
     },
     modelConfig: {
       model: modelName,

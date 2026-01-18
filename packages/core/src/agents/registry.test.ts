@@ -871,7 +871,7 @@ describe('AgentRegistry', () => {
       const description = registry.getToolDescription();
 
       expect(description).toContain(
-        'Delegates a task to a specialized sub-agent',
+        'ALWAYS use this tool to delegate to a specialized sub-agent',
       );
       expect(description).toContain('Available agents:');
       expect(description).toContain(
