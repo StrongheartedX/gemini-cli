@@ -26,6 +26,7 @@ import { GEMINI_DIR, homedir } from '../utils/paths.js';
 import { debugLogger } from '../utils/debugLogger.js';
 import { WriteTodosTool } from '../tools/write-todos.js';
 import { resolveModel, isPreviewModel } from '../config/models.js';
+import { ApprovalMode } from '../policy/types.js';
 
 export function resolvePathFromEnv(envVar?: string): {
   isSwitch: boolean;
@@ -130,6 +131,31 @@ export function getCoreSystemPrompt(
     .includes(WriteTodosTool.Name);
 
   const interactiveMode = interactiveOverride ?? config.isInteractive();
+
+  const approvalMode = config.getApprovalMode?.() ?? ApprovalMode.DEFAULT;
+  let approvalModePrompt = '';
+  switch (approvalMode) {
+    case ApprovalMode.PLAN:
+      approvalModePrompt = `- **Approval Mode (Plan):** You are currently operating in a strictly research and planning capacity.
+- You may use read-only tools only e.g. list directories, search files, read files, or google search.
+- You MUST NOT use tools that edit files, run shell commands, or modify the system state.
+- If the user requests a modification, you must refuse the tool execution (do not attempt to call the tool), and explain you are in "Plan" mode with access to read-only tools.`;
+      break;
+    case ApprovalMode.AUTO_EDIT:
+      approvalModePrompt = `- **Approval Mode (Auto-Edit):** You have **partial autonomy** to streamline filesystem processes.
+- Tools for writing, editing, and creating files are pre-approved.
+- Other tools may still trigger a user confirmation.`;
+      break;
+    case ApprovalMode.YOLO:
+      approvalModePrompt = `- **Approval Mode (YOLO):** You are operating with **maximum permissions** and **zero friction**. 
+- Tool calls, including file edits, shell commands, and system modifications, are auto-approved.
+- Use caution the user will not be prompted for confirmation.`;
+      break;
+    case ApprovalMode.DEFAULT:
+    default:
+      approvalModePrompt = '';
+      break;
+  }
 
   const skills = config.getSkillManager().getSkills();
   let skillsPrompt = '';
@@ -301,6 +327,7 @@ ${(function () {
 })()}
 - **Remembering Facts:** Use the '${MEMORY_TOOL_NAME}' tool to remember specific, *user-related* facts or preferences when the user explicitly asks, or when they state a clear, concise piece of information that would help personalize or streamline *your future interactions with them* (e.g., preferred coding style, common project paths they use, personal tool aliases). This tool is for user-specific information that should persist across sessions. Do *not* use it for general project context or information.${interactiveMode ? ` If unsure whether to save something, you can ask the user, "Should I remember that for you?"` : ''}
 - **Respect User Confirmations:** Most tool calls (also denoted as 'function calls') will first require confirmation from the user, where they will either approve or cancel the function call. If a user cancels a function call, respect their choice and do _not_ try to make the function call again. It is okay to request the tool call again _only_ if the user requests that same tool call on a subsequent prompt. When a user cancels a function call, assume best intentions from the user and consider inquiring if they prefer any alternative paths forward.
+${approvalModePrompt}
 
 ## Interaction Details
 - **Help Command:** The user can use '/help' to display help information.
