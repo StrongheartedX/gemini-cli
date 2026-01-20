@@ -117,8 +117,14 @@ export const defaultKeyBindings: KeyBindingConfig = {
   [Command.EXIT]: [{ key: 'd', ctrl: true }],
 
   // Cursor Movement
-  [Command.HOME]: [{ key: 'a', ctrl: true }, { key: 'home' }],
-  [Command.END]: [{ key: 'e', ctrl: true }, { key: 'end' }],
+  [Command.HOME]: [
+    { key: 'a', ctrl: true },
+    { key: 'home', ctrl: false },
+  ],
+  [Command.END]: [
+    { key: 'e', ctrl: true },
+    { key: 'end', ctrl: false },
+  ],
   [Command.MOVE_UP]: [{ key: 'up', ctrl: false, command: false }],
   [Command.MOVE_DOWN]: [{ key: 'down', ctrl: false, command: false }],
   [Command.MOVE_LEFT]: [
@@ -162,8 +168,8 @@ export const defaultKeyBindings: KeyBindingConfig = {
   // Scrolling
   [Command.SCROLL_UP]: [{ key: 'up', shift: true }],
   [Command.SCROLL_DOWN]: [{ key: 'down', shift: true }],
-  [Command.SCROLL_HOME]: [{ key: 'home' }],
-  [Command.SCROLL_END]: [{ key: 'end' }],
+  [Command.SCROLL_HOME]: [{ key: 'home', ctrl: true }],
+  [Command.SCROLL_END]: [{ key: 'end', ctrl: true }],
   [Command.PAGE_UP]: [{ key: 'pageup' }],
   [Command.PAGE_DOWN]: [{ key: 'pagedown' }],
 
@@ -431,5 +437,6 @@ export const commandDescriptions: Readonly<Record<Command, string>> = {
   [Command.FOCUS_SHELL_INPUT]: 'Focus the shell input from the gemini input.',
   [Command.UNFOCUS_SHELL_INPUT]: 'Focus the Gemini input from the shell input.',
   [Command.CLEAR_SCREEN]: 'Clear the terminal screen and redraw the UI.',
-  [Command.RESTART_APP]: 'Restart the application.',
+  [Command.RESTART_APP]:
+    'Restart the application when admin settings have been changed.',
 };

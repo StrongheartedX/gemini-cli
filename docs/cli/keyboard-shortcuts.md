@@ -19,8 +19,8 @@ available combinations.
 
 | Action                                      | Keys                                                         |
 | ------------------------------------------- | ------------------------------------------------------------ |
-| Move the cursor to the start of the line.   | `Ctrl + A`<br />`Home`                                       |
-| Move the cursor to the end of the line.     | `Ctrl + E`<br />`End`                                        |
+| Move the cursor to the start of the line.   | `Ctrl + A`<br />`Home (no Ctrl)`                             |
+| Move the cursor to the end of the line.     | `Ctrl + E`<br />`End (no Ctrl)`                              |
 | Move the cursor up one line.                | `Up Arrow (no Ctrl, no Cmd)`                                 |
 | Move the cursor down one line.              | `Down Arrow (no Ctrl, no Cmd)`                               |
 | Move the cursor one character to the left.  | `Left Arrow (no Ctrl, no Cmd)`<br />`Ctrl + B`               |
@@ -48,8 +48,8 @@ available combinations.
 | ------------------------ | -------------------- |
 | Scroll content up.       | `Shift + Up Arrow`   |
 | Scroll content down.     | `Shift + Down Arrow` |
-| Scroll to the top.       | `Home`               |
-| Scroll to the bottom.    | `End`                |
+| Scroll to the top.       | `Ctrl + Home`        |
+| Scroll to the bottom.    | `Ctrl + End`         |
 | Scroll up by one page.   | `Page Up`            |
 | Scroll down by one page. | `Page Down`          |
 
@@ -106,7 +106,7 @@ available combinations.
 | Focus the shell input from the gemini input.                                                     | `Tab (no Shift)` |
 | Focus the Gemini input from the shell input.                                                     | `Tab`            |
 | Clear the terminal screen and redraw the UI.                                                     | `Ctrl + L`       |
-| Restart the application.                                                                         | `R`              |
+| Restart the application when admin settings have been changed.                                   | `R`              |
 
 <!-- KEYBINDINGS-AUTOGEN:END -->
 
