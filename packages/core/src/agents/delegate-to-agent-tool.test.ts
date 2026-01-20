@@ -61,9 +61,13 @@ describe('DelegateToAgentTool', () => {
       },
     },
     inputConfig: {
-      inputs: {
-        arg1: { type: 'string', description: 'Argument 1', required: true },
-        arg2: { type: 'number', description: 'Argument 2', required: false },
+      inputSchema: {
+        type: 'object',
+        properties: {
+          arg1: { type: 'string', description: 'Argument 1' },
+          arg2: { type: 'number', description: 'Argument 2' },
+        },
+        required: ['arg1'],
       },
     },
     runConfig: { maxTurns: 1, maxTimeMinutes: 1 },
@@ -76,8 +80,12 @@ describe('DelegateToAgentTool', () => {
     description: 'A remote agent',
     agentCardUrl: 'https://example.com/agent.json',
     inputConfig: {
-      inputs: {
-        query: { type: 'string', description: 'Query', required: true },
+      inputSchema: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'Query' },
+        },
+        required: ['query'],
       },
     },
   };
@@ -153,7 +161,7 @@ describe('DelegateToAgentTool', () => {
     await expect(() =>
       invocation.execute(new AbortController().signal),
     ).rejects.toThrow(
-      "arg1: Required. Expected inputs: 'arg1' (required string), 'arg2' (optional number).",
+      "Invalid arguments for agent 'test_agent': params must have required property 'arg1'. Expected inputs: 'arg1' (required string), 'arg2' (optional number).",
     );
   });
 
@@ -166,7 +174,7 @@ describe('DelegateToAgentTool', () => {
     await expect(() =>
       invocation.execute(new AbortController().signal),
     ).rejects.toThrow(
-      "arg1: Expected string, received number. Expected inputs: 'arg1' (required string), 'arg2' (optional number).",
+      "Invalid arguments for agent 'test_agent': params/arg1 must be string. Expected inputs: 'arg1' (required string), 'arg2' (optional number).",
     );
   });
 
@@ -187,12 +195,15 @@ describe('DelegateToAgentTool', () => {
       ...mockAgentDef,
       name: 'invalid_agent',
       inputConfig: {
-        inputs: {
-          agent_name: {
-            type: 'string',
-            description: 'Conflict',
-            required: true,
+        inputSchema: {
+          type: 'object',
+          properties: {
+            agent_name: {
+              type: 'string',
+              description: 'Conflict',
+            },
           },
+          required: ['agent_name'],
         },
       },
     };

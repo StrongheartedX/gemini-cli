@@ -34,7 +34,7 @@ describe('RemoteAgentInvocation', () => {
     displayName: 'Test Agent',
     description: 'A test agent',
     inputConfig: {
-      inputs: {},
+      inputSchema: { type: 'object' },
     },
   };
 
